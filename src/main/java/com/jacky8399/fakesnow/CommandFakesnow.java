@@ -7,15 +7,21 @@ import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
 import org.bukkit.command.TabExecutor;
 import org.bukkit.entity.Player;
-import org.bukkit.event.world.WorldLoadEvent;
 
-import com.jacky8399.fakesnow.events.Events;
+import com.jacky8399.fakesnow.utils.WorldGuardManager;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashSet;
 import java.util.List;
 
 public class CommandFakesnow implements TabExecutor {
+
+    private final FakeSnow plugin;
+
+    public CommandFakesnow(FakeSnow plugin) {
+        this.plugin = plugin;
+    }
+
     @Override
     public boolean onCommand(CommandSender sender, Command command, String label, String[] args) {
         if (args.length == 0)
@@ -23,13 +29,13 @@ public class CommandFakesnow implements TabExecutor {
         switch (args[0]) {
             case "refreshregions": {
                 // Clear old cache first
-                FakeSnow.get().getRegionChunkCache().clear();
-                FakeSnow.get().getRegionWorldCache().clear();
+                WorldGuardManager worldGuardManager = plugin.getWorldGuardManager();
+                worldGuardManager.clearCaches();
                 for (World world : Bukkit.getWorlds())
-                    (new Events()).onWorldLoad(new WorldLoadEvent(world));
+                    worldGuardManager.scanWorldForRegions(world);
                 sender.sendMessage(ChatColor.GREEN + "Reloaded " + Bukkit.getWorlds() + " worlds");
                 sender.sendMessage(ChatColor.GREEN + "Discovered " +
-                        FakeSnow.get().getRegionChunkCache().values().stream().mapToInt(HashSet::size).sum() + " region(s)");
+                        worldGuardManager.getRegionChunkCache().values().stream().mapToInt(HashSet::size).sum() + " region(s)");
                 return true;
             }
             case "realbiome": {
@@ -53,4 +59,5 @@ public class CommandFakesnow implements TabExecutor {
         else
             return Collections.emptyList();
     }
+
 }

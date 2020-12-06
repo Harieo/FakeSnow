@@ -1,4 +1,4 @@
-package com.jacky8399.fakesnow;
+package com.jacky8399.fakesnow.utils;
 
 import org.bukkit.Bukkit;
 import org.bukkit.Chunk;
