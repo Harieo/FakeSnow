@@ -1,4 +1,4 @@
-package com.jacky8399.fakesnow;
+package com.jacky8399.fakesnow.events;
 
 import com.comphenix.protocol.PacketType;
 import com.comphenix.protocol.events.ListenerPriority;
@@ -6,6 +6,8 @@ import com.comphenix.protocol.events.PacketAdapter;
 import com.comphenix.protocol.events.PacketContainer;
 import com.comphenix.protocol.events.PacketEvent;
 import com.comphenix.protocol.wrappers.ChunkCoordIntPair;
+import com.jacky8399.fakesnow.FakeSnow;
+import com.jacky8399.fakesnow.NMSUtils;
 import com.sk89q.worldedit.bukkit.BukkitAdapter;
 import com.sk89q.worldedit.math.BlockVector3;
 import com.sk89q.worldguard.WorldGuard;
@@ -30,8 +32,8 @@ public class PacketListener extends PacketAdapter {
         Chunk chunk = world.getChunkAt(x, z);
 
         // check for __global__ first
-        if (FakeSnow.get().regionWorldCache.get(world) != null) {
-            ProtectedRegion globalRegion = FakeSnow.get().regionWorldCache.get(world);
+        if (FakeSnow.get().getRegionWorldCache().get(world) != null) {
+            ProtectedRegion globalRegion = FakeSnow.get().getRegionWorldCache().get(world);
             FakeSnow.WeatherType weatherType = globalRegion.getFlag(FakeSnow.CUSTOM_WEATHER_TYPE);
             if (weatherType != null && weatherType != FakeSnow.WeatherType.DEFAULT) {
                 Object biomeStorage = NMSUtils.cloneBiomeStorage(NMSUtils.getBiomeStorage(chunk));
@@ -47,7 +49,7 @@ public class PacketListener extends PacketAdapter {
         }
 
         ChunkCoordIntPair chunkCoords = new ChunkCoordIntPair(x, z);
-        HashSet<ProtectedRegion> regions = PLUGIN.regionChunkCache.get(chunkCoords);
+        HashSet<ProtectedRegion> regions = PLUGIN.getRegionChunkCache().get(chunkCoords);
         if (regions == null || regions.size() == 0)
             return;
 

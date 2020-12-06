@@ -1,22 +1,23 @@
 package com.jacky8399.fakesnow;
 
 import com.comphenix.protocol.ProtocolLibrary;
-import com.comphenix.protocol.ProtocolManager;
 import com.comphenix.protocol.wrappers.ChunkCoordIntPair;
 import com.google.common.collect.Maps;
+import com.jacky8399.fakesnow.events.Events;
+import com.jacky8399.fakesnow.events.PacketListener;
 import com.sk89q.worldguard.WorldGuard;
 import com.sk89q.worldguard.protection.flags.EnumFlag;
 import com.sk89q.worldguard.protection.flags.registry.FlagConflictException;
 import com.sk89q.worldguard.protection.regions.ProtectedRegion;
-import com.sk89q.worldguard.session.handler.Handler;
+
 import org.bukkit.Bukkit;
 import org.bukkit.World;
 import org.bukkit.block.Biome;
 import org.bukkit.plugin.java.JavaPlugin;
 
-import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.Map;
 import java.util.WeakHashMap;
 import java.util.logging.Logger;
 
@@ -31,7 +32,26 @@ public final class FakeSnow extends JavaPlugin {
             this.biome = biome;
         }
     }
+
     public static EnumFlag<WeatherType> CUSTOM_WEATHER_TYPE;
+    private static FakeSnow INSTANCE;
+
+    private final HashMap<ChunkCoordIntPair, HashSet<ProtectedRegion>> regionChunkCache = Maps.newHashMap();
+    private final WeakHashMap<World, ProtectedRegion> regionWorldCache = new WeakHashMap<>();
+
+    public Logger logger;
+
+    @Override
+    public void onEnable() {
+        INSTANCE = this;
+        logger = getLogger();
+        logger.info("FakeSnow is loading");
+
+        Bukkit.getPluginManager().registerEvents(new Events(), this);
+        getCommand("fakesnow").setExecutor(new CommandFakesnow());
+        ProtocolLibrary.getProtocolManager().addPacketListener(new PacketListener());
+    }
+
     @Override
     public void onLoad() {
         super.onLoad();
@@ -44,31 +64,18 @@ public final class FakeSnow extends JavaPlugin {
         }
     }
 
-    public HashMap<ChunkCoordIntPair, HashSet<ProtectedRegion>> regionChunkCache = Maps.newHashMap();
-    public WeakHashMap<World, ProtectedRegion> regionWorldCache = new WeakHashMap<>();
-
-    private static FakeSnow INSTANCE;
-    public Logger logger;
-    @Override
-    public void onEnable() {
-        INSTANCE = this;
-        logger = getLogger();
-        logger.info("FakeSnow is loading");
-        Bukkit.getPluginManager().registerEvents(new Events(), this);
-        getCommand("fakesnow").setExecutor(new CommandFakesnow());
-        ProtocolLibrary.getProtocolManager().addPacketListener(new PacketListener());
-
-        try {
-            //NMSUtils.getHandle(Bukkit.getServer());
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-    }
-
     @Override
     public void onDisable() {
         regionChunkCache.clear();
         regionWorldCache.clear();
+    }
+
+    public Map<ChunkCoordIntPair, HashSet<ProtectedRegion>> getRegionChunkCache() {
+        return regionChunkCache;
+    }
+
+    public Map<World, ProtectedRegion> getRegionWorldCache() {
+        return regionWorldCache;
     }
 
     public static FakeSnow get() {

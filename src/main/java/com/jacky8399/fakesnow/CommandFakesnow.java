@@ -9,6 +9,7 @@ import org.bukkit.command.TabExecutor;
 import org.bukkit.entity.Player;
 import org.bukkit.event.world.WorldLoadEvent;
 
+import com.jacky8399.fakesnow.events.Events;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashSet;
@@ -22,13 +23,13 @@ public class CommandFakesnow implements TabExecutor {
         switch (args[0]) {
             case "refreshregions": {
                 // Clear old cache first
-                FakeSnow.get().regionChunkCache.clear();
-                FakeSnow.get().regionWorldCache.clear();
+                FakeSnow.get().getRegionChunkCache().clear();
+                FakeSnow.get().getRegionWorldCache().clear();
                 for (World world : Bukkit.getWorlds())
                     (new Events()).onWorldLoad(new WorldLoadEvent(world));
                 sender.sendMessage(ChatColor.GREEN + "Reloaded " + Bukkit.getWorlds() + " worlds");
                 sender.sendMessage(ChatColor.GREEN + "Discovered " +
-                        FakeSnow.get().regionChunkCache.values().stream().mapToInt(HashSet::size).sum() + " region(s)");
+                        FakeSnow.get().getRegionChunkCache().values().stream().mapToInt(HashSet::size).sum() + " region(s)");
                 return true;
             }
             case "realbiome": {

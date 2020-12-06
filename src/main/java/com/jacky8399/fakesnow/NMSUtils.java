@@ -3,7 +3,6 @@ package com.jacky8399.fakesnow;
 import org.bukkit.Bukkit;
 import org.bukkit.Chunk;
 import org.bukkit.block.Biome;
-import org.bukkit.craftbukkit.libs.org.apache.commons.lang3.Validate;
 
 import java.lang.reflect.Array;
 import java.lang.reflect.Constructor;
@@ -11,6 +10,7 @@ import java.lang.reflect.Field;
 import java.lang.reflect.Method;
 import java.util.Arrays;
 import java.util.function.Function;
+import org.apache.commons.lang.Validate;
 
 // all method signatures are from v1_16_R3, unless otherwise specified
 public class NMSUtils {
@@ -55,6 +55,7 @@ public class NMSUtils {
     static Method BIOME_STORAGE_GET_BIOME_BYTES;
     static Field BIOME_STORAGE_STORAGE_FIELD; // private final BiomeBase[] h on v1_16_R3
     static Field BIOME_STORAGE_REGISTRY_FIELD; // public final Registry<BiomeBase> g on v1_16_R3
+
     static void findBiomeClazzes() {
         try {
             //
